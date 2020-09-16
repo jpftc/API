@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja de games</title>
+</head>
+
+<hr>
+<h4>Lista de games</h4>
+<ul id="games"></ul>
+<hr>
+
+<h4>Novo game</h4>
+<input type="text" name="title" id="title" placeholder="Título"><br>
+<input type="number" name="year" id="year" placeholder="Ano"><br>
+<input type="number" name="price" id="price" placeholder="Preço"><br>
+<button type="button" onclick="createGame()">Criar</button>
+
+<body>
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+
+    // Função para enviar games para a API
+    function createGame() {
+        var titleInput = document.getElementById("title");
+        var yearInput = document.getElementById("year");
+        var priceInput = document.getElementById("price");
+
+        var game = {
+            title: titleInput.value,
+            year: yearInput.value,
+            price: priceInput.value
+        }
+
+        // Enviando Json para API
+        axios.post("http://localhost:3000/game", game).then(response => {
+            if (response.status == 200) {
+                alert("Game cadastrado!");
+            }
+        }).catch(err => {
+            console.log(err);
+        });
+    }
+
+    // Requisição com metodo get na API
+    axios.get("http://localhost:3000/games").then(response => {
+        var games = response.data
+        // Salva ID=games do HTML na variavel list
+        var list = document.getElementById("games");
+
+        // Exibe games na tela
+        games.forEach(game => {
+            var item = document.createElement("li");
+            item.innerHTML = game.id + " - " + game.title + " - $ " + game.price;
+            list.appendChild(item);
+        });
+    }).catch(err => {
+        console.log(err);
+    });
+
+</script>
+
+</html>

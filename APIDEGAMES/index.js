@@ -3,6 +3,11 @@ const express = require("express");
 const app = express();
 // Importando bodyParser
 const bodyParser = require("body-parser");
+// Importando cors
+const cors = require("cors");
+
+// Habilitando cors
+app.use(cors());
 
 // Configurando bodyParser
 app.use(bodyParser.urlencoded({ extended: false }));
