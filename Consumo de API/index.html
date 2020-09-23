@@ -7,6 +7,11 @@
     <title>Loja de games</title>
 </head>
 
+<h2>Login</h2>
+<input type="text" name="email" id="email" placeholder="E-mail"><br>
+<input type="password" name="password" id="password" placeholder="********">
+<button onclick="login()">Entrar</button>
+
 <hr>
 <h4>Lista de games</h4>
 <ul id="games"></ul>
@@ -31,6 +36,36 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
 
+    // Criadno configuração do cabeçalho da requisição do Axios
+    var axiosConfig = {
+        headers: {
+            Authorization: "Bearer " + localStorage.getItem("token")
+        }
+    }
+
+    // Função para autenticação com axios
+    function login() {
+        var emailField = document.getElementById("email");
+        var passwordField = document.getElementById("password");
+
+        var email = emailField.value;
+        var password = passwordField.value;
+
+        // Chamando rota de autenticação passando parametros de email e senha
+        axios.post("http://localhost:3000/auth", {
+            email,
+            password
+        }).then(res => {
+            var token = res.data.token;
+            // Salva informações no "HD" dentro do navegador
+            localStorage.setItem("token", token);
+            axiosConfig.headers.Authorization = "Bearer " + localStorage.getItem("token");
+        }).catch(err => {
+            alert("Login incorreto!");
+        });
+
+    }
+
     // Função para enviar games para a API
     function createGame() {
         var titleInput = document.getElementById("title");
@@ -44,7 +79,7 @@
         }
 
         // Enviando Json para API
-        axios.post("http://localhost:3000/game", game).then(response => {
+        axios.post("http://localhost:3000/game", game, axiosConfig).then(response => {
             if (response.status == 200) {
                 alert("Game cadastrado!");
             }
@@ -56,7 +91,7 @@
     // FUnção para deletar game
     function deleteGame(listItem) {
         var id = listItem.getAttribute("data-id");
-        axios.delete("http://localhost:3000/game/" + id).then(response => {
+        axios.delete("http://localhost:3000/game/" + id, axiosConfig).then(response => {
             alert("Game deletado!")
         }).catch(err => {
             console.log(err);
@@ -100,7 +135,7 @@
         var id = idInput.value;
 
         // Enviando Json para API
-        axios.put("http://localhost:3000/game/"+id, game).then(response => {
+        axios.put("http://localhost:3000/game/", + id, game, axiosConfig).then(response => {
             if (response.status == 200) {
                 alert("Game atualizado!");
             }
@@ -110,7 +145,7 @@
     }
 
     // Requisição com metodo get na API
-    axios.get("http://localhost:3000/games").then(response => {
+    axios.get("http://localhost:3000/games", axiosConfig).then(response => {
         var games = response.data
         // Salva ID=games do HTML na variavel list
         var list = document.getElementById("games");
