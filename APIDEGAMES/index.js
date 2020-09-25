@@ -86,9 +86,29 @@ var DB = {
 
 // Criando primeira rota listando todos games
 app.get("/games", auth, (req, res) => {
+
+    // implementando HATEOAS
+    var HATEOAS = [
+        {
+            href: "http://localhost:3000/game/0",
+            method: "DELETE",
+            rel: "delete_game"
+        },
+        {
+            href: "http://localhost:3000/game/0",
+            method: "GET",
+            rel: "get_game"
+        },
+        {
+            href: "http://localhost:3000/auth",
+            method: "POST",
+            rel: "login"
+        }
+    ]
+
     res.statusCode = 200;
     // Acessando variavel que está dentro do middleware
-    res.json(DB.games);
+    res.json({ games: DB.games, _links: HATEOAS });
 });
 
 // Rota para listar um game
@@ -134,6 +154,25 @@ app.delete("/game/:id", auth, (req, res) => {
     } else {
         // Converte o numero para int e procura no JSON
         var id = parseInt(req.params.id);
+
+        var HATEOAS = [
+            {
+                href: "http://localhost:3000/game/" + id,
+                method: "DELETE",
+                rel: "delete_game"
+            },
+            {
+                href: "http://localhost:3000/game/" + id,
+                method: "GET",
+                rel: "get_game"
+            },
+            {
+                href: "http://localhost:3000/auth",
+                method: "POST",
+                rel: "login"
+            }
+        ]
+
         var index = DB.games.findIndex(g => g.id == id);
         // Valida se o numero existe
         if (index == -1) {
@@ -154,6 +193,25 @@ app.put("/game/:id", auth, (req, res) => {
     } else {
         // Se for valido converte o id para int e consulta no "banco de dados"
         var id = parseInt(req.params.id);
+
+        var HATEOAS = [
+            {
+                href: "http://localhost:3000/game/" + id,
+                method: "DELETE",
+                rel: "delete_game"
+            },
+            {
+                href: "http://localhost:3000/game/" + id,
+                method: "GET",
+                rel: "edit_game"
+            },
+            {
+                href: "http://localhost:3000/games",
+                method: "GET",
+                rel: "get_all_games"
+            }
+        ]
+
         var game = DB.games.find(g => g.id == id);
         if (game != undefined) {
             // Edita o game
